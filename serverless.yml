@@ -1,0 +1,77 @@
+service: ott-mvp-subscription-api
+# frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-east-1
+  stage: dev
+
+  iamRoleStatements:
+   - Effect: "Allow"
+     Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+     Resource:
+      - "arn:aws:dynamodb:${self:provider.region}:*:table/ott_mvp_subscription"
+
+custom:
+  handlerPath: handlers
+
+layers:
+  layerOne:
+    path: ./layers/
+    name: ott-mvp-subscription-api-layer-${self:provider.stage}
+    compatibleRuntimes: # optional, a list of runtimes this layer is compatible with
+      - nodejs12.x
+    retain: false # optional, false by default. If true, layer versions are not deleted as new ones are created
+    jetpack:
+      roots:
+        - "./layers/nodejs/"
+
+functions:
+  getSubscription:
+    handler: ${self:custom.handlerPath}/subscriptionHandler.getSubscription
+    layers:
+      - Ref: LayerOneLambdaLayer
+    events:
+      - http:
+          path: /subscription/get
+          method: get
+
+  createSubscription:
+    handler: ${self:custom.handlerPath}/subscriptionHandler.createSubscription
+    layers:
+      - Ref: LayerOneLambdaLayer
+    events:
+      - http:
+          path: /subscription/add
+          method: post
+
+  getSubscriptionById:
+    handler: ${self:custom.handlerPath}/subscriptionHandler.getSubscriptionById
+    layers:
+      - Ref: LayerOneLambdaLayer
+    events:
+      - http:
+          path: /subscription/get/{id}
+          method: get
+
+  updateSubscription:
+    handler: ${self:custom.handlerPath}/subscriptionHandler.updateSubscription
+    layers:
+      - Ref: LayerOneLambdaLayer
+    events:
+    - http:
+        path: /subscription/update/{id}
+        method: put 
+
+package:
+  exclude:
+    - node_modules/**
+    - layers/**
+    - package-lock.json

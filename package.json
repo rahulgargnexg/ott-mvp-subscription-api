@@ -1,0 +1,19 @@
+{
+  "name": "ott-mvp-subscription-api",
+  "version": "1.0.0",
+  "description": "ott-mvp-subscription-api",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "2.955.0",
+    "uuid-v4": "^0.1.0"
+  },
+  "devDependencies": {
+    "aws-sdk": "2.955.0",
+    "serverless-jetpack": "^0.11.1"
+  }
+}
